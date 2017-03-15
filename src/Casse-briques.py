@@ -1,25 +1,18 @@
 #!/usr/bin/env python3
 # coding=utf-8
 
-# from math import sin, cos
+from math import sin, cos
 from tkinter import *
 import time
+from random import random
 
+# import PIL
+# from PIL import Image, ImageTk
 
 import os
 chemin_absolu = os.path.abspath(__file__)
 nom_dossier = os.path.dirname(chemin_absolu)
 os.chdir(nom_dossier)
-
-
-# import PIL
-# from PIL import Image, ImageTk
-
-
-def jouer ():
-    global fond
-    # balle=fond.create_oval(100,100,100,100,fill='#9c27b0',width=15)
-    # fond.create_rectangle(220,150,160 ,160, fill='#f48fb1', width=2)
 
 
 
@@ -29,6 +22,10 @@ fen.title("Y'a qu'a casser des briques") # On nomme la fenêtre
 
 largeur_fen = 700
 hauteur_fen = 700
+
+# On définit les dimensions de la zone de jeu.
+largeur_jeu = 600 # qui est aussi la largeur de l'image
+hauteur_jeu = 700 # qui est aussi la hauteur de l'image
 
 fen.geometry(str(largeur_fen) + "x" + str(hauteur_fen) + "+0+0") # on redimensionne la fenêtre
 # et on l'affiche au premier plan
@@ -40,22 +37,10 @@ fen.after(25, lambda: fen.attributes('-topmost', 0))
 fond = Canvas(fen, width=largeur_fen, height=hauteur_fen, bg='#b0bec5', bd=3)
 fond.place(x=0, y=0)
 
-# On définit les dimensions de la zone de jeu.
-
-largeur_jeu = 600 # qui est aussi la largeur de l'image
-hauteur_jeu = 700 # qui est aussi la hauteur de l'image
-
 # On ouvre notre image qui sera le fond du canvas.
-#chemin_image_fond = os.getcwd() + '/../img/isn2.png'
-#image_fond = PIL.ImageTk.PhotoImage(PIL.Image.open(chemin_image_fond))
-
-#fond.create_image(0, 0, anchor=NW, image=image_fond)
-
-
-
-
-
-
+# chemin_image_fond = os.getcwd() + '/../img/isn2.png'
+# image_fond = PIL.ImageTk.PhotoImage(PIL.Image.open(chemin_image_fond))
+# fond.create_image(0, 0, anchor=NW, image=image_fond)
 
 
 
@@ -80,8 +65,9 @@ barre = fond.create_rectangle(
 
 
 
-
-
+def jouer():
+    global jeu_en_cours
+    jeu_en_cours = True
 
 # On crée les boutons
 Bouton_jouer = Button(fen, text='Jouer', command=jouer)
@@ -100,7 +86,7 @@ B2.place(x=largeur_jeu + 15,y=650)
 
 # Informations à propos du joueur
 joueur_vies_restantes = 3
-jeu_en_cours = True
+jeu_en_cours = False # Le jeu commence quand la fonction jouer est appelée (bouton).
 
 def marche_arrêt():
     global jeu_en_cours
@@ -116,13 +102,11 @@ def marche_arrêt():
 
 
 
-
-
 bouton_marche_arrêt = Button(fen,text='Pause', command=marche_arrêt)
 bouton_marche_arrêt.place(x=25,y=25)
 
 
-joueur_points = 42
+joueur_points = 42 # TODO
 
 
 
@@ -135,11 +119,14 @@ balle_rayon = 15
 balle_x_initial = largeur_jeu / 2
 balle_y_initial = hauteur_jeu - 100
 
-
-# vitesse en pixels par image
-balle_vitesse_y_initiale = -0.06
-balle_vitesse_x = 0.1
+# vitesse en pixels par image (*frame* en anglais)
+balle_vitesse_y_initiale = 0.1
+balle_vitesse_x = random() / 10
 balle_vitesse_y = balle_vitesse_y_initiale
+
+# Vecteur vitesse en coordonnées polaires.
+# balle_vitesse = .4
+# balle_direction = 0 # 0° = vers la droite
 
 
 balle = fond.create_oval(balle_x_initial, balle_y_initial,
@@ -167,6 +154,16 @@ balle = fond.create_oval(balle_x_initial, balle_y_initial,
     | 3,1 | 3,2 | 3,3 | …
 '''
 
+brique_largeur = 70
+brique_hauteur = 30
+def créer_brique(x, y, dureté=1, couleur="#42bbff"):
+    fond.create_rectangle(
+        x, y,
+        x + brique_largeur, y + brique_hauteur,
+        fill=couleur, width=2)
+
+for x in range(50, largeur_jeu - 50, int((largeur_jeu - 2*50)/5)):
+    créer_brique(x, 100)
 
 
 
@@ -176,7 +173,8 @@ balle = fond.create_oval(balle_x_initial, balle_y_initial,
 
 
 
-
+# NOTE : à retirer on attend pas que le joueur clique sur [Jouer]
+jouer()
 
 
 
