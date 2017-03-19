@@ -120,15 +120,9 @@ balle_rayon = 15
 balle_x_initial = largeur_jeu / 2
 balle_y_initial = hauteur_jeu - 100
 
-# vitesse en pixels par image (*frame* en anglais)
-# balle_vitesse_y_initiale = 0.1
-# balle_vitesse_x = random() / 10
-# balle_vitesse_y = balle_vitesse_y_initiale
-
 # Vecteur vitesse en coordonnées polaires.
-balle_vitesse = .5
+balle_vitesse = .5 # vitesse en pixels par image (*frame* en anglais)
 balle_direction = 45 # 0° = vers la droite, comme pour le cercle trigonométrique standard
-
 
 balle = fond.create_oval(balle_x_initial, balle_y_initial,
                         balle_x_initial, balle_y_initial,
@@ -217,7 +211,7 @@ def déplacer_barre(event):
 def déplacer_balle(dt):
     # global balle_vitesse_x, balle_vitesse_y, joueur_vies_restantes
     global balle_direction, joueur_vies_restantes
-    x, y, y2, x2 = fond.coords(balle)
+    x, y, x2, y2 = fond.coords(balle)
 
     # Gestion des rebonds avec la barre
     barre_x1, barre_y1, barre_x2, barre_y2 = fond.coords(barre)
@@ -264,9 +258,8 @@ def déplacer_balle(dt):
         # À DÉPLACER
         marche_arrêt() # pause
         joueur_vies_restantes -= 1 # le joueur perd une vie
-        balle_direction = (random() - 0.5) * 90
-        print(balle_direction)
 
+        balle_direction = (random() - 0.5) * 90
         x, y = balle_x_initial, balle_y_initial
 
         if joueur_vies_restantes == 0:
@@ -312,7 +305,7 @@ def déplacer_balle(dt):
 
     # fond.coords(balle, (x2, y2, x2, y2)) # on déplace la balle
 
-temps_actuel = time.time()
+temps_actuel = time.time() # Sert à garder la valeur de temps, de l'image (frame) précédente.
 def boucle_de_jeu():
     # On relance une boucle de jeu, qui sera exécutée plus tard.
     # On vise ici 100 images par seconde
@@ -325,11 +318,11 @@ def boucle_de_jeu():
     dt = 1000 * (temps_actuel - time.time()) # en millisecondes
     temps_actuel = time.time()
 
-
+    # si le jeu est en pause, on ne déplace pas la balle
     if jeu_en_cours == False:
-        return
+        return # on quitte la fonction
 
-    #fond.move(barre, +3, 0)
+    # fond.move(barre, +3, 0)
     déplacer_balle(dt)
 
 
@@ -338,6 +331,12 @@ fen.after(round(1000/60), boucle_de_jeu)
 # On attache l'événement associé au déplacement de la souris
 # au gestionnaire du déplacement de la barre de jeu.
 fen.bind('<Motion>', déplacer_barre)
+
+def événement_clic(event):
+    if jeu_en_cours == False:
+        marche_arrêt()
+
+fen.bind("<Button-1>", événement_clic)
 
 
 fen.mainloop()
