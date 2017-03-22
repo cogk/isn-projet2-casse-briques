@@ -151,18 +151,17 @@ balle = fond.create_oval(balle_x_initial, balle_y_initial,
 
 brique_largeur = 70
 brique_hauteur = 30
-def créer_brique(x, y, dureté=1, couleur="#42bbff"):
+def créer_brique(x, y, dureté=1, couleur="#d32f2f"):
     fond.create_rectangle(
         x, y,
         x + brique_largeur, y + brique_hauteur,
         fill=couleur, width=2)
 
 for x in range(50, largeur_jeu - 50, int((largeur_jeu - 2*50)/5)):
-    créer_brique(x, 100)
-
-
-
-
+    créer_brique(x, 60)
+    créer_brique(x, 160)
+    créer_brique(x+50, 110)    
+    créer_brique(x+50, 210)
 
 
 
@@ -170,8 +169,6 @@ for x in range(50, largeur_jeu - 50, int((largeur_jeu - 2*50)/5)):
 
 # NOTE : à retirer on attend pas que le joueur clique sur [Jouer]
 jouer()
-
-
 
 
 
@@ -265,6 +262,8 @@ def déplacer_balle(dt):
         if joueur_vies_restantes == 0:
             # message=fond.create_text('oooo')
             Bouton_jouer.config(text='Rejouer')
+            #a refaire pour que ça fonctionne
+            #bouton_marche_arrêt(state=DISABLED)
 
         # TODO gestion de la défaite (joueur_vies_restantes == 0)
         # TODO Afficher message pour relancer la balle
