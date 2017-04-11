@@ -10,8 +10,8 @@ from random import random, randrange
 from math import pi as PI
 import time
 
-# import PIL
-# from PIL import Image, ImageTk
+import PIL
+from PIL import Image, ImageTk
 
 import os
 chemin_absolu = os.path.abspath(__file__) # où est situé ce fichier
@@ -24,12 +24,12 @@ os.chdir(nom_dossier) # on se déplace dans ce dossier-là
 fen = Tk() # On crée la fenêtre
 fen.title("Y'a qu'a casser des briques") # On nomme la fenêtre
 
-largeur_fen = 700
-hauteur_fen = 700
+# largeur_fen = 700
+# hauteur_fen = 700
 
 # On définit les dimensions de la zone de jeu.
-largeur_jeu = 600 # qui est aussi la largeur de l'image
-hauteur_jeu = 700 # qui est aussi la hauteur de l'image
+largeur_fen = largeur_jeu = 600 # qui est aussi la largeur de l'image
+hauteur_fen = hauteur_jeu = 700 # qui est aussi la hauteur de l'image
 
 fen.geometry(str(largeur_fen) + "x" + str(hauteur_fen) + "+0+0") # on redimensionne la fenêtre
 
@@ -40,9 +40,9 @@ fond = Canvas(fen, width=largeur_fen, height=hauteur_fen, bg='#b0bec5', bd=3)
 fond.place(x=0, y=0)
 
 # On ouvre notre image qui sera le fond du canvas.
-# chemin_image_fond = os.getcwd() + '/../img/isn2.png'
-# image_fond = PIL.ImageTk.PhotoImage(PIL.Image.open(chemin_image_fond))
-# fond.create_image(0, 0, anchor=NW, image=image_fond)
+chemin_image_fond = os.getcwd() + '/../img/isn2.png'
+image_fond = PIL.ImageTk.PhotoImage(PIL.Image.open(chemin_image_fond))
+fond.create_image(0, 0, anchor=NW, image=image_fond)
 
 
 
@@ -57,8 +57,8 @@ def jouer():
 # Bouton_jouer = Button(fen, text='Jouer', command=jouer)
 # Bouton_jouer.place(x=largeur_jeu + 20, y=590)
 
-Bouton_quitter = Button(fen,text='Quitter', command=fen.destroy)
-Bouton_quitter.place(x=largeur_jeu + 15, y=650)
+# Bouton_quitter = Button(fen,text='Quitter', command=fen.destroy)
+# Bouton_quitter.place(x=largeur_jeu + 15, y=650)
 
 
 jeu_en_cours = False # Le jeu commence quand la fonction jouer est appelée (bouton).
@@ -66,29 +66,55 @@ def marche_arrêt():
     global jeu_en_cours
     jeu_en_cours = not jeu_en_cours
 
-    if jeu_en_cours == True:
-        bouton_marche_arrêt.config(text='Pause')
-
-    else:
-        bouton_marche_arrêt.config(text='Continuer')
-
-
-bouton_marche_arrêt = Button(fen,text='Pause', command=marche_arrêt)
-bouton_marche_arrêt.place(x=largeur_fen - 75,y=25)
+#     if jeu_en_cours == True:
+#         bouton_marche_arrêt.config(text='Pause')
+#
+#     else:
+#         bouton_marche_arrêt.config(text='Continuer')
+#
+#
+# bouton_marche_arrêt = Button(fen,text='Pause', command=marche_arrêt)
+# bouton_marche_arrêt.place(x=largeur_fen - 75,y=25)
 
 
 
 # Informations à propos du joueur
 joueur_vies_restantes = 3
-
-Label_vies = Label(fen, text='Vies: %d' % joueur_vies_restantes)
-Label_vies.place(x=largeur_jeu + 20, y=590)
-
+Label_vies = Label(fen, text='Vies: %i' % joueur_vies_restantes, fg="#3f51b5", font=(None, 20))
+Label_vies.place(x=10, y=10)
 
 
+def nouvelle_partie():
+    global joueur_vies_restantes, balle_direction
+    joueur_vies_restantes = 3
+    jeu_en_cours = False
+    Label_vies.config(text='Vies: %i' % joueur_vies_restantes)
+    Bouton_rejouer.pack_forget()
+    Label_perdu.pack_forget()
+    Label_gagné.pack_forget()
 
+    balle_direction = (random() - 0.5) * 90
+    x, y = balle_x_initial, balle_y_initial
+    fond.coords(balle, (x, y, x + 2*balle_rayon, y + 2*balle_rayon))
 
+    créer_briques()
 
+Bouton_rejouer = Button(fen, text='Rejouer', command=nouvelle_partie)
+Bouton_rejouer.pack_forget()
+
+Label_perdu = Label(fen, text='Perdu :(', fg="red", font=(None, 30))
+Label_perdu.pack_forget()
+
+Label_gagné = Label(fen, text='Gagné !', fg="green", font=(None, 30))
+Label_gagné.pack_forget()
+
+def partie_perdue():
+    Bouton_rejouer.pack()
+    Label_perdu.pack(side = BOTTOM)
+
+def partie_gagnée():
+    Bouton_rejouer.pack()
+    Label_gagné.pack(side = BOTTOM)
 
 
 balle_rayon = 15
@@ -96,7 +122,7 @@ balle_x_initial = largeur_jeu / 2
 balle_y_initial = hauteur_jeu - 100
 
 # Vecteur vitesse en coordonnées polaires.
-balle_vitesse = 0.4 # vitesse (unité ?)
+balle_vitesse = 0.5 # vitesse (unité ?)
 balle_direction = 32 # 90° = vers la droite
 
 balle = fond.create_oval(balle_x_initial, balle_y_initial,
@@ -110,7 +136,7 @@ balle = fond.create_oval(balle_x_initial, balle_y_initial,
 barre_largeur = 150
 barre_hauteur = 15
 
-barre_départ_x, barre_départ_y = (largeur_fen - barre_largeur)/2, hauteur_fen - 25 - barre_hauteur
+barre_départ_x, barre_départ_y = (largeur_jeu - barre_largeur)/2, hauteur_jeu - 25 - barre_hauteur
 # Au départ :
 # - la barre est au milieu en abscisse
 # - la barre est séparée du bas de la fenêtre par 25 pixels
@@ -178,18 +204,38 @@ def créer_brique(ligne, colonne, dureté=1):
     briques_coords.append( (x, y, x2, y2) )
 
 
-for ligne in range(3, 13):
-    for colonne in range(1, 9):
-        créer_brique(ligne, colonne, dureté=randrange(0,4))
+def créer_briques(l_min = 3, l_max = 13, c_min = 1, c_max = 9):
+    for ligne in range(l_min, l_max):
+        for colonne in range(c_min, c_max):
+            créer_brique(ligne, colonne, dureté=randrange(0,4))
 
-    # Si le numéro de ligne est impair, on ajoute une brique de plus en largeur pour compléter le motif créé par décalage d'une demi-brique vers la gauche.
-    if ligne % 2 == 1:
-        créer_brique(ligne, 9)
+            # Si le numéro de ligne est impair, on ajoute une brique de plus en largeur pour compléter le motif créé par décalage d'une demi-brique vers la gauche.
+            if ligne % 2 == 1:
+                créer_brique(ligne, c_max)
+
+nouvelle_partie()
 
 
 
 
-# Cette fonctionest appelée à chaque déplacement de la souris.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+# Cette fonction est appelée à chaque déplacement de la souris.
 def déplacer_barre(event):
     x_souris, y_souris = event.x, event.y # on récupère les coordonnées de la souris
 
@@ -282,6 +328,9 @@ def gestion_collisions_balle_briques():
                 briques_duretés.pop(index)
                 briques_coords.pop(index)
 
+                if len(briques_rect) == 0: # fonctionne aussi avec les autres listes
+                    partie_gagnée()
+
 
 
 
@@ -358,9 +407,7 @@ def déplacer_balle(dt):
         Label_vies.config(text='Vies: %d' % joueur_vies_restantes)
 
         if joueur_vies_restantes == 0:
-            # TODO Afficher message pour relancer la balle
-            Bouton_rejouer= Button(fen, text='Rejouer')
-            Bouton_rejouer.place(x=largeur_fen - 75, y=60)
+            partie_perdue()
 
     # Gestion des collisions avec les briques
     gestion_collisions_balle_briques()
@@ -396,7 +443,7 @@ def boucle_de_jeu():
     temps_actuel = time.time()
 
     # Si le jeu est en pause, on ne déplace pas la balle.
-    if jeu_en_cours == False:
+    if jeu_en_cours == False or joueur_vies_restantes == 0:
         return # on quitte la fonction
 
     déplacer_balle(dt)
